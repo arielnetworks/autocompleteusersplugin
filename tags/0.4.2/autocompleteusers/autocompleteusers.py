@@ -11,8 +11,8 @@ import fnmatch
 from trac.config import ListOption
 from trac.core import Component, implements
 from trac.web.api import IRequestFilter, IRequestHandler
-from trac.web.chrome import Chrome, ITemplateProvider, ITemplateStreamFilter
-from trac.web.chrome import add_script, add_stylesheet
+from trac.web.chrome import Chrome, ITemplateProvider, \
+                            ITemplateStreamFilter, add_script, add_stylesheet
 
 USER = 0
 NAME = 1
@@ -23,8 +23,7 @@ class AutocompleteUsers(Component):
     implements(IRequestFilter, IRequestHandler,
                ITemplateProvider, ITemplateStreamFilter)
 
-    selectfields = ListOption(
-        'autocomplete', 'fields', default='',
+    selectfields = ListOption('autocomplete', 'fields', default='',
         doc="select fields to transform to autocomplete text boxes")
 
     # IRequestHandler methods
@@ -70,10 +69,15 @@ class AutocompleteUsers(Component):
             add_script(req, 'autocomplete/js/autocomplete.js')
             add_script(req, 'autocomplete/js/format_item.js')
             if template == 'ticket.html':
+                restrict_owner = self.config.getbool('ticket', 'restrict_owner')
                 if req.path_info.rstrip() == '/newticket':
-                    add_script(req, 'autocomplete/js/autocomplete_newticket.js')
+                    add_script(req, 'autocomplete/js/autocomplete_newticket_cc.js')
+                    if not restrict_owner:
+                        add_script(req, 'autocomplete/js/autocomplete_newticket.js')
                 else:
-                    add_script(req, 'autocomplete/js/autocomplete_ticket.js')
+                    add_script(req, 'autocomplete/js/autocomplete_ticket_cc.js')
+                    if not restrict_owner:
+                        add_script(req, 'autocomplete/js/autocomplete_ticket.js')
             elif template == 'admin_perms.html':
                 add_script(req, 'autocomplete/js/autocomplete_perms.js')
             elif template == 'query.html':

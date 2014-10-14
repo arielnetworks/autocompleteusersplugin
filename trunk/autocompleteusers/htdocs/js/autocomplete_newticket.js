@@ -12,11 +12,4 @@ jQuery(document).ready(function ($) {
   $("input:text#field-reporter").autocomplete("subjects", {
     formatItem: formatItem
   });
-
-  for (var i = 0; i < autocomplete_custom_fields.length; i++) {
-    $("#field-" + autocomplete_custom_fields[i]).autocomplete("subjects", {
-      formatItem: formatItem
-    });
-  }
-
 });
